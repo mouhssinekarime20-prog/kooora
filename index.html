@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>كووورة — الموقع العربي الرياضي الأول</title>
+<meta name="description" content="كووورة هو الموقع العربي الرياضي الأول لمتابعة مباريات اليوم والنتائج المباشرة وأخبار جميع المسابقات الكروية حول العالم.">
+<meta name="keywords" content="كووورة, مباريات اليوم, نتائج مباشرة, كرة القدم, الدوري المغربي, كأس العالم">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{direction:rtl;font-family:'Tajawal',Arial,sans-serif;background:#f0f2f5;color:#1a1a2e;}
+a{text-decoration:none;color:inherit;}
+.topbar{background:#0d0d1a;color:white;padding:6px 20px;display:flex;justify-content:space-between;align-items:center;font-size:12px;}
+.topbar a{color:#aaa;margin-right:16px;}
+.navbar{background:#16213e;padding:0 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #f7c948;position:sticky;top:0;z-index:1000;box-shadow:0 2px 12px #00000044;}
+.logo{color:#f7c948;font-size:22px;font-weight:700;padding:11px 0;cursor:pointer;letter-spacing:1px;}
+.nav-links{display:flex;}
+.nav-links a{color:#ccc;padding:14px 13px;font-size:13px;border-bottom:3px solid transparent;margin-bottom:-3px;cursor:pointer;transition:color .2s,border-color .2s;white-space:nowrap;}
+.nav-links a.active,.nav-links a:hover{color:#f7c948;border-bottom-color:#f7c948;}
+.btn-login{background:transparent;border:1px solid #f7c948;color:#f7c948;padding:6px 16px;border-radius:5px;cursor:pointer;font-size:13px;font-family:'Tajawal',sans-serif;}
+.btn-login:hover{background:#f7c948;color:#1a1a2e;}
+.page{display:none;min-height:80vh;}.page.active{display:block;}
+.live-header{background:#16213e;padding:8px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #ffffff15;}
+.live-dot{width:9px;height:9px;border-radius:50%;background:#e24b4a;animation:pulse 1.2s infinite;flex-shrink:0;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.2;}}
+.live-label{color:#e24b4a;font-weight:700;font-size:13px;}
+.date-strip{background:#fff;border-bottom:1px solid #e0e0e0;padding:0 20px;display:flex;align-items:center;overflow-x:auto;scrollbar-width:none;}
+.date-strip::-webkit-scrollbar{display:none;}
+.date-tab{padding:10px 15px;font-size:13px;color:#666;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;}
+.date-tab.today{background:#f7c948;color:#1a1a2e;font-weight:700;border-radius:4px 4px 0 0;}
+.main-grid{display:grid;grid-template-columns:1fr 250px;gap:16px;padding:16px 20px;max-width:1200px;margin:0 auto;}
+@media(max-width:768px){.main-grid{grid-template-columns:1fr;}.sidebar{display:none;}}
+.section-title{font-size:16px;font-weight:700;border-right:4px solid #f7c948;padding-right:10px;margin-bottom:14px;color:#1a1a2e;}
+.league-group{background:#fff;border:1px solid #e8e8e8;border-radius:10px;margin-bottom:12px;overflow:hidden;box-shadow:0 1px 4px #0000000a;}
+.league-header{background:#f8f9fa;padding:9px 15px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #e8e8e8;}
+.league-name-txt{font-size:13px;font-weight:700;}
+.league-round{font-size:11px;color:#888;margin-right:auto;}
+.match-row{display:flex;align-items:center;padding:11px 15px;border-bottom:1px solid #f0f0f0;gap:10px;cursor:pointer;transition:background .15s;}
+.match-row:last-child{border-bottom:none;}
+.match-row:hover{background:#fffdf0;}
+.match-minute{min-width:44px;text-align:center;}
+.min-live{font-size:12px;font-weight:700;color:#e24b4a;}
+.min-ended{font-size:11px;color:#888;background:#f0f0f0;padding:2px 7px;border-radius:4px;}
+.min-upcoming{font-size:13px;font-weight:700;color:#f7c948;}
+.teams-col{flex:1;display:flex;flex-direction:column;gap:6px;}
+.team-row{display:flex;align-items:center;gap:7px;font-size:13px;}
+.team-logo{width:20px;height:20px;object-fit:contain;}
+.score-col{display:flex;gap:4px;min-width:56px;justify-content:center;align-items:center;}
+.score-n{background:#1a1a2e;color:#f7c948;font-weight:700;font-size:16px;padding:3px 8px;border-radius:5px;min-width:26px;text-align:center;}
+.score-n.flash{animation:sflash .7s;}
+@keyframes sflash{0%{background:#f7c948;color:#1a1a2e;}100%{background:#1a1a2e;color:#f7c948;}}
+.match-detail-link{font-size:11px;color:#f7c948;margin-right:auto;}
+.incident-bar{background:#fffdf0;border-right:3px solid #f7c94866;padding:6px 15px;font-size:11px;color:#666;display:none;}
+.incident-bar.show{display:block;}
+.standings-wrap{background:#fff;border:1px solid #e8e8e8;border-radius:10px;overflow:hidden;}
+.standings-table{width:100%;border-collapse:collapse;font-size:13px;}
+.standings-table thead tr{background:#16213e;color:#ccc;}
+.standings-table th{padding:9px 6px;text-align:center;font-weight:500;font-size:11px;}
+.standings-table th:nth-child(2){text-align:right;padding-right:10px;}
+.standings-table tbody tr{border-bottom:1px solid #f0f0f0;cursor:pointer;transition:background .12s;}
+.standings-table tbody tr:hover{background:#fffdf0;}
+.standings-table td{padding:9px 6px;text-align:center;font-size:13px;}
+.standings-table td:nth-child(2){text-align:right;}
+.team-name-cell{display:flex;align-items:center;gap:7px;padding-right:8px;}
+.form-dots{display:flex;gap:3px;justify-content:center;}
+.dot{width:14px;height:14px;border-radius:50%;font-size:8px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;}
+.dot.w{background:#27500A;}.dot.d{background:#888;}.dot.l{background:#791F1F;}
+.legend{display:flex;gap:16px;font-size:11px;color:#888;padding:9px 12px;border-top:1px solid #f0f0f0;flex-wrap:wrap;}
+.legend span{display:flex;align-items:center;gap:5px;}
+.ldot{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+.sidebar-widget{background:#fff;border:1px solid #e8e8e8;border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.widget-title{font-size:13px;font-weight:700;padding:10px 14px;border-bottom:1px solid #f0f0f0;background:#f8f9fa;}
+.comp-item{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid #f0f0f0;font-size:13px;cursor:pointer;transition:background .15s;}
+.comp-item:last-child{border-bottom:none;}
+.comp-item:hover{background:#fffdf0;}
+.live-badge{font-size:10px;background:#e24b4a18;color:#e24b4a;padding:2px 7px;border-radius:8px;margin-right:auto;font-weight:600;}
+.scorer-row{display:flex;align-items:center;gap:8px;padding:7px 14px;border-bottom:1px solid #f0f0f0;font-size:12px;}
+.scorer-row:last-child{border-bottom:none;}
+.scorer-min{color:#e24b4a;font-weight:700;min-width:28px;font-size:11px;}
+.countdown-widget{padding:14px;text-align:center;}
+.cd-num{font-size:30px;font-weight:700;color:#f7c948;}
+.cd-lbl{font-size:11px;color:#888;margin-top:3px;}
+.progress-track{margin-top:10px;height:5px;background:#f0f0f0;border-radius:3px;overflow:hidden;}
+.progress-fill{height:100%;background:#f7c948;border-radius:3px;transition:width 1s linear;}
+.loading-spinner{text-align:center;padding:40px;color:#888;font-size:14px;}
+.loading-spinner i{font-size:30px;color:#f7c948;animation:spin 1s linear infinite;display:block;margin-bottom:10px;}
+@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+.error-box{background:#fff8f8;border:1px solid #ffcccc;border-radius:8px;padding:16px;text-align:center;color:#c0392b;font-size:13px;margin-bottom:12px;}
+.stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:16px 20px;}
+@media(max-width:600px){.stat-cards{grid-template-columns:1fr 1fr;}}
+.stat-card{background:#fff;border:1px solid #e8e8e8;border-radius:10px;padding:14px;text-align:center;}
+.stat-num{font-size:28px;font-weight:700;color:#f7c948;}
+.stat-lbl{font-size:11px;color:#888;margin-top:4px;}
+.team-hero{background:linear-gradient(135deg,#16213e,#0d0d1a);padding:28px 20px;display:flex;align-items:center;gap:22px;flex-wrap:wrap;}
+.team-logo-big{width:75px;height:75px;border-radius:50%;background:#f7c94815;border:2px solid #f7c948;display:flex;align-items:center;justify-content:center;font-size:34px;flex-shrink:0;}
+.team-hero h1{color:white;font-size:24px;font-weight:700;}
+.team-hero p{color:#aaa;font-size:13px;margin-top:4px;}
+.team-badges{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.team-badge-pill{font-size:11px;padding:4px 12px;border-radius:12px;font-weight:600;}
+.players-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:0 20px 20px;}
+@media(max-width:600px){.players-grid{grid-template-columns:1fr 1fr;}}
+.player-card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:16px;text-align:center;cursor:pointer;transition:border-color .2s;}
+.player-card:hover{border-color:#f7c948;}
+.player-avatar{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#16213e,#2a3f6f);display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 10px;}
+.player-name{font-size:13px;font-weight:700;}
+.player-pos{font-size:11px;color:#888;margin-top:3px;}
+.player-goals{font-size:12px;color:#f7c948;margin-top:5px;font-weight:600;}
+.live-page-grid{display:grid;grid-template-columns:1fr 300px;height:440px;}
+@media(max-width:768px){.live-page-grid{grid-template-columns:1fr;height:auto;}}
+.video-area{background:#0d0d1a;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;min-height:300px;}
+.play-btn{width:66px;height:66px;border-radius:50%;background:#f7c948;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:26px;color:#1a1a2e;transition:transform .15s;}
+.play-btn:hover{transform:scale(1.08);}
+.live-score-bar{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,#000000cc);padding:14px 20px;display:flex;align-items:center;justify-content:center;gap:18px;}
+.ls-team{color:white;font-size:14px;font-weight:700;}
+.ls-score{font-size:26px;font-weight:700;color:#f7c948;}
+.ls-min{font-size:12px;color:#e24b4a;font-weight:700;background:#e24b4a18;padding:3px 8px;border-radius:8px;}
+.chat-area{background:#fff;border-right:1px solid #e8e8e8;display:flex;flex-direction:column;}
+.chat-header{padding:11px 14px;border-bottom:1px solid #f0f0f0;font-size:13px;font-weight:700;background:#f8f9fa;}
+.chat-messages{flex:1;overflow-y:auto;padding:10px 13px;display:flex;flex-direction:column;gap:7px;}
+.chat-msg{font-size:12px;line-height:1.5;}
+.chat-msg .user{color:#16213e;font-weight:700;}
+.goal-alert{background:#fff8e1;border-right:3px solid #f7c948;padding:5px 9px;border-radius:5px;font-size:12px;font-weight:700;}
+.chat-input-row{display:flex;gap:7px;padding:9px 12px;border-top:1px solid #f0f0f0;}
+.chat-input-row input{flex:1;padding:7px 11px;border:1px solid #ddd;border-radius:7px;background:#f8f9fa;font-size:12px;font-family:'Tajawal',sans-serif;outline:none;}
+.chat-input-row input:focus{border-color:#f7c948;}
+.chat-input-row button{background:#f7c948;border:none;color:#1a1a2e;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:13px;font-family:'Tajawal',sans-serif;font-weight:700;}
+.news-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:600px){.news-grid{grid-template-columns:1fr;}}
+.news-card{background:#fff;border:1px solid #e8e8e8;border-radius:10px;overflow:hidden;cursor:pointer;transition:box-shadow .2s;}
+.news-card:hover{box-shadow:0 4px 14px #0000001a;}
+.news-img{background:linear-gradient(135deg,#16213e,#0d0d1a);height:100px;display:flex;align-items:center;justify-content:center;}
+.news-img i{font-size:34px;color:#f7c94855;}
+.news-body{padding:12px;}
+.news-cat{font-size:11px;color:#f7c948;font-weight:700;margin-bottom:5px;}
+.news-title{font-size:13px;line-height:1.6;}
+.news-time{font-size:11px;color:#aaa;margin-top:7px;}
+footer{background:#0d0d1a;color:#666;text-align:center;padding:22px 20px;font-size:12px;margin-top:30px;}
+footer span{color:#f7c948;}
+.tabs{display:flex;border-bottom:1px solid #e0e0e0;margin-bottom:14px;background:#fff;border-radius:8px 8px 0 0;overflow:hidden;}
+.tab{padding:10px 18px;font-size:13px;cursor:pointer;color:#888;border-bottom:3px solid transparent;margin-bottom:-1px;transition:color .2s;}
+.tab.active{color:#f7c948;border-bottom-color:#f7c948;font-weight:700;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div><a href="#">الرئيسية</a><a href="#">كأس العالم 2026</a><a href="#">البث المباشر</a></div>
+  <div id="top-date" style="color:#aaa;font-size:12px;"></div>
+</div>
+
+<nav class="navbar">
+  <div class="logo" onclick="goPage('home')">⚽ KOOORA</div>
+  <div class="nav-links">
+    <a onclick="goPage('home')" id="nav-home" class="active">مباريات اليوم</a>
+    <a onclick="goPage('standings')" id="nav-standings">الترتيب</a>
+    <a onclick="goPage('team')" id="nav-team">الفرق</a>
+    <a onclick="goPage('live')" id="nav-live">🔴 بث مباشر</a>
+    <a onclick="goPage('news')" id="nav-news">أخبار</a>
+  </div>
+  <div><button class="btn-login">تسجيل الدخول</button></div>
+</nav>
+
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+  <div class="live-header">
+    <div class="live-dot"></div>
+    <span class="live-label">مباشر</span>
+    <span id="live-count" style="color:#aaa;font-size:12px;margin-right:6px;">جاري التحميل...</span>
+    <span style="margin-right:auto;color:#888;font-size:11px;">التحديث القادم: <b id="cd" style="color:#f7c948;">60</b> ث</span>
+  </div>
+  <div class="date-strip">
+    <span style="padding:10px;color:#888;cursor:pointer;font-size:16px;" onclick="changeDay(-1)">‹</span>
+    <div class="date-tab" id="tab-minus2" onclick="changeDay(-2)"></div>
+    <div class="date-tab" id="tab-minus1" onclick="changeDay(-1)"></div>
+    <div class="date-tab today" id="tab-0" onclick="changeDay(0)">اليوم</div>
+    <div class="date-tab" id="tab-plus1" onclick="changeDay(1)"></div>
+    <div class="date-tab" id="tab-plus2" onclick="changeDay(2)"></div>
+    <span style="padding:10px;color:#888;cursor:pointer;font-size:16px;" onclick="changeDay(1)">›</span>
+    <div style="margin-right:auto;padding:8px 14px;">
+      <select id="league-filter" onchange="filterLeague()" style="font-size:12px;border:1px solid #ddd;border-radius:5px;padding:5px 10px;background:#fff;color:#1a1a2e;">
+        <option value="all">جميع المسابقات</option>
+      </select>
+    </div>
+  </div>
+  <div class="main-grid">
+    <div id="matches-col"><div class="loading-spinner"><i class="fa fa-spinner"></i>جاري تحميل المباريات...</div></div>
+    <div class="sidebar">
+      <div class="sidebar-widget">
+        <div class="widget-title">📡 المباريات الجارية</div>
+        <div id="live-leagues-list"><div style="padding:10px 14px;font-size:12px;color:#aaa;">جاري التحميل...</div></div>
+      </div>
+      <div class="sidebar-widget">
+        <div class="widget-title">⚽ أحدث الأهداف</div>
+        <div id="goals-sidebar"><div style="padding:10px 14px;font-size:12px;color:#aaa;">جاري التحميل...</div></div>
+      </div>
+      <div class="sidebar-widget">
+        <div class="countdown-widget">
+          <div class="cd-num" id="cd2">60</div>
+          <div class="cd-lbl">ثانية للتحديث التالي</div>
+          <div class="progress-track"><div class="progress-fill" id="pb" style="width:100%;"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STANDINGS PAGE -->
+<div class="page" id="page-standings">
+  <div class="main-grid">
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-top:4px;">
+        <div class="section-title" style="margin-bottom:0;">جدول الترتيب</div>
+        <select id="st-league-sel" onchange="loadStandings()" style="font-size:13px;border:1px solid #ddd;border-radius:6px;padding:6px 12px;background:#fff;cursor:pointer;">
+          <option value="307">🇲🇦 الدوري المغربي الممتاز</option>
+          <option value="140">🇪🇸 الدوري الإسباني</option>
+          <option value="39">🇬🇧 الدوري الإنجليزي</option>
+          <option value="135">🇮🇹 الدوري الإيطالي</option>
+          <option value="61">🇫🇷 الدوري الفرنسي</option>
+          <option value="78">🇩🇪 الدوري الألماني</option>
+          <option value="2">🏆 دوري أبطال أوروبا</option>
+        </select>
+      </div>
+      <div id="standings-container"><div class="loading-spinner"><i class="fa fa-spinner"></i>جاري التحميل...</div></div>
+    </div>
+    <div class="sidebar">
+      <div class="sidebar-widget">
+        <div class="widget-title">اختر الدوري</div>
+        <div class="comp-item" onclick="setSt('307')">🇲🇦 الدوري المغربي</div>
+        <div class="comp-item" onclick="setSt('140')">🇪🇸 الدوري الإسباني</div>
+        <div class="comp-item" onclick="setSt('39')">🇬🇧 الدوري الإنجليزي</div>
+        <div class="comp-item" onclick="setSt('135')">🇮🇹 الدوري الإيطالي</div>
+        <div class="comp-item" onclick="setSt('61')">🇫🇷 الدوري الفرنسي</div>
+        <div class="comp-item" onclick="setSt('78')">🇩🇪 الدوري الألماني</div>
+        <div class="comp-item" onclick="setSt('2')">🏆 دوري الأبطال</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TEAM PAGE -->
+<div class="page" id="page-team">
+  <div class="team-hero">
+    <div class="team-logo-big">🔴</div>
+    <div>
+      <h1>الوداد الرياضي</h1>
+      <p>الدوري المغربي الممتاز — الموسم 2025/26</p>
+      <div class="team-badges">
+        <span class="team-badge-pill" style="background:#f7c94820;color:#f7c948;">🥇 المتصدر</span>
+        <span class="team-badge-pill" style="background:#e24b4a20;color:#e24b4a;">52 نقطة</span>
+      </div>
+    </div>
+    <div style="margin-right:auto;">
+      <button onclick="goPage('live')" style="background:#e24b4a;border:none;color:white;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:14px;font-family:'Tajawal',sans-serif;font-weight:700;">🔴 مشاهدة مباشرة</button>
+    </div>
+  </div>
+  <div class="stat-cards">
+    <div class="stat-card"><div class="stat-num">16</div><div class="stat-lbl">انتصارات</div></div>
+    <div class="stat-card"><div class="stat-num">48</div><div class="stat-lbl">أهداف مسجلة</div></div>
+    <div class="stat-card"><div class="stat-num">18</div><div class="stat-lbl">أهداف مستقبلة</div></div>
+    <div class="stat-card"><div class="stat-num">52</div><div class="stat-lbl">نقطة</div></div>
+  </div>
+  <div style="padding:0 20px 12px;"><div class="section-title">لاعبو الفريق</div></div>
+  <div class="players-grid">
+    <div class="player-card"><div class="player-avatar">🧤</div><div class="player-name">ياسين البوحدوز</div><div class="player-pos">حارس مرمى</div><div class="player-goals">0 أهداف</div></div>
+    <div class="player-card"><div class="player-avatar">🛡️</div><div class="player-name">وليد الركراكي</div><div class="player-pos">مدافع</div><div class="player-goals">2 أهداف</div></div>
+    <div class="player-card"><div class="player-avatar">⚙️</div><div class="player-name">حمزة الشرقاوي</div><div class="player-pos">وسط</div><div class="player-goals">7 أهداف</div></div>
+    <div class="player-card"><div class="player-avatar">⚡</div><div class="player-name">أيوب الكعبي</div><div class="player-pos">مهاجم</div><div class="player-goals" style="color:#e24b4a;">18 أهداف ⚽</div></div>
+    <div class="player-card"><div class="player-avatar">🌟</div><div class="player-name">رشيد الدرير</div><div class="player-pos">جناح</div><div class="player-goals">9 أهداف</div></div>
+    <div class="player-card"><div class="player-avatar">🎯</div><div class="player-name">كريم الأحمدي</div><div class="player-pos">وسط</div><div class="player-goals">5 أهداف</div></div>
+  </div>
+</div>
+
+<!-- LIVE PAGE -->
+<div class="page" id="page-live">
+  <div class="live-header">
+    <div class="live-dot"></div>
+    <span class="live-label">بث مباشر</span>
+    <span style="color:#aaa;font-size:12px;margin-right:8px;">🇲🇦 المغرب ضد 🇵🇹 البرتغال — كأس العالم 2026</span>
+  </div>
+  <div class="live-page-grid">
+    <div class="video-area">
+      <div style="text-align:center;">
+        <div class="play-btn" id="play-btn" onclick="togglePlay()">▶</div>
+        <div style="color:#aaa;font-size:13px;margin-top:12px;">اضغط لبدء المشاهدة</div>
+        <div style="color:#666;font-size:11px;margin-top:4px;">📺 HD 1080p</div>
+      </div>
+      <div class="live-score-bar">
+        <span class="ls-team">🇲🇦 المغرب</span>
+        <span class="ls-score" id="live-hs">1</span>
+        <span style="color:#aaa;font-size:18px;">-</span>
+        <span class="ls-score" id="live-as">1</span>
+        <span class="ls-team">البرتغال 🇵🇹</span>
+        <span class="ls-min" id="live-min">67'</span>
+      </div>
+    </div>
+    <div class="chat-area">
+      <div class="chat-header">💬 التعليقات <span style="color:#888;font-size:11px;font-weight:400;">● 1,247 مشاهد</span></div>
+      <div class="chat-messages" id="chat-msgs"></div>
+      <div class="chat-input-row">
+        <input id="chat-in" placeholder="شارك برأيك..." onkeydown="if(event.key==='Enter')sendChat()">
+        <button onclick="sendChat()">إرسال</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NEWS PAGE -->
+<div class="page" id="page-news">
+  <div class="main-grid">
+    <div>
+      <div class="section-title" style="padding-top:4px;">آخر الأخبار الرياضية</div>
+      <div class="news-grid">
+        <div class="news-card"><div class="news-img"><i class="fa-solid fa-trophy"></i></div><div class="news-body"><div class="news-cat">كأس العالم 2026</div><div class="news-title">المغرب يستعد لمواجهة كبرى في ثمن النهائي بعد فوز مثير</div><div class="news-time">منذ ساعتين</div></div></div>
+        <div class="news-card"><div class="news-img"><i class="fa-solid fa-futbol"></i></div><div class="news-body"><div class="news-cat">دوري الأبطال</div><div class="news-title">ريال مدريد يؤكد التعاقد مع نجم جديد قبيل انطلاق الموسم</div><div class="news-time">منذ 4 ساعات</div></div></div>
+        <div class="news-card"><div class="news-img"><i class="fa-solid fa-star"></i></div><div class="news-body"><div class="news-cat">الدوري المغربي</div><div class="news-title">الوداد يتعاقد مع مدرب جديد قبيل نهاية الموسم</div><div class="news-time">منذ 5 ساعات</div></div></div>
+        <div class="news-card"><div class="news-img"><i class="fa-solid fa-newspaper"></i></div><div class="news-body"><div class="news-cat">إصابات</div><div class="news-title">غياب النجم المغربي عن مباريات الأسبوع القادم</div><div class="news-time">منذ 6 ساعات</div></div></div>
+        <div class="news-card"><div class="news-img"><i class="fa-solid fa-ranking-star"></i></div><div class="news-body"><div class="news-cat">الدوري الإسباني</div><div class="news-title">الكلاسيكو الليلة — برشلونة يتصدر بنقطتين</div><div class="news-time">منذ 7 ساعات</div></div></div>
+        <div class="news-card"><div class="news-img"><i class="fa-solid fa-globe"></i></div><div class="news-body"><div class="news-cat">كأس العالم 2026</div><div class="news-title">الجدول الكامل لمباريات دور الثمانية</div><div class="news-time">منذ 8 ساعات</div></div></div>
+      </div>
+    </div>
+    <div class="sidebar">
+      <div class="sidebar-widget">
+        <div class="widget-title">🔥 الأكثر قراءة</div>
+        <div class="comp-item" style="flex-direction:column;align-items:flex-start;gap:2px;"><span style="font-size:11px;color:#f7c948;font-weight:700;">كأس العالم</span><span>المغرب في ربع النهائي 🇲🇦</span></div>
+        <div class="comp-item" style="flex-direction:column;align-items:flex-start;gap:2px;"><span style="font-size:11px;color:#f7c948;font-weight:700;">نقل</span><span>صفقة ريال مدريد الكبرى</span></div>
+        <div class="comp-item" style="flex-direction:column;align-items:flex-start;gap:2px;"><span style="font-size:11px;color:#f7c948;font-weight:700;">الدوري المغربي</span><span>مفاجأة في قمة الوداد والرجاء</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>جميع الحقوق محفوظة &copy; 2026 <span>KOOORA</span> — الموقع العربي الرياضي الأول</p>
+</footer>
+
+<script>
+// ===== CONFIG =====
+const API_KEY = '649217c1a2msh1da1d36a1dbe144p1eb35bjsnf7810033128b';
+const API_HOST = 'free-api-live-football-data.p.rapidapi.com';
+const BASE_URL = 'https://free-api-live-football-data.p.rapidapi.com';
+const SEASON = 2025;
+
+// ===== DATE =====
+const arabicDays = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const arabicMonths = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+let currentDayOffset = 0;
+const today = new Date();
+document.getElementById('top-date').textContent = arabicDays[today.getDay()] + ' ' + today.getDate() + ' ' + arabicMonths[today.getMonth()] + ' ' + today.getFullYear();
+
+function getDateWithOffset(offset) {
+  const d = new Date();
+  d.setDate(d.getDate() + offset);
+  return d;
+}
+function formatDate(d) {
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function arabicShortDate(d) {
+  const names = ['أحد','إثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'];
+  return names[d.getDay()] + ' ' + d.getDate();
+}
+
+function initDateTabs() {
+  for (let i = -2; i <= 2; i++) {
+    const el = document.getElementById('tab-' + (i >= 0 ? 'plus' + i : 'minus' + Math.abs(i)));
+    if (!el) continue;
+    if (i === 0) { el.textContent = 'اليوم'; continue; }
+    el.textContent = arabicShortDate(getDateWithOffset(i));
+  }
+  // fix IDs
+  document.getElementById('tab-plus0') && (document.getElementById('tab-plus0').textContent = 'اليوم');
+}
+
+function changeDay(offset) {
+  currentDayOffset = offset;
+  document.querySelectorAll('.date-tab').forEach(t => t.classList.remove('today'));
+  const ids = ['tab-minus2','tab-minus1','tab-0','tab-plus1','tab-plus2'];
+  const offsets = [-2,-1,0,1,2];
+  offsets.forEach((o,i) => { if(o===offset) { const el=document.getElementById(ids[i]); if(el) el.classList.add('today'); } });
+  loadFixtures();
+}
+
+// ===== API CALL =====
+async function apiGet(endpoint) {
+  try {
+    const res = await fetch(BASE_URL + endpoint, {
+      headers: {
+        'x-rapidapi-key': API_KEY,
+        'x-rapidapi-host': API_HOST
+      }
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return await res.json();
+  } catch(e) {
+    console.error('API Error:', e);
+    return null;
+  }
+}
+
+// ===== FIXTURES (TODAY'S MATCHES) =====
+let allFixtures = [];
+let activeLeagueFilter = 'all';
+
+async function loadFixtures() {
+  const col = document.getElementById('matches-col');
+  col.innerHTML = '<div class="loading-spinner"><i class="fa fa-spinner"></i>جاري تحميل المباريات...</div>';
+
+  const dateStr = formatDate(getDateWithOffset(currentDayOffset));
+  const data = await apiGet('/football-get-all-fixtures-by-date?date=' + dateStr);
+
+  if (!data || !data.response) {
+    col.innerHTML = '<div class="error-box"><i class="fa fa-exclamation-triangle"></i> تعذر تحميل المباريات. حاول مجدداً.</div>';
+    return;
+  }
+
+  allFixtures = data.response || [];
+  renderFixtures(allFixtures);
+  updateLiveInfo(allFixtures);
+  buildLeagueFilter(allFixtures);
+}
+
+function buildLeagueFilter(fixtures) {
+  const leagues = {};
+  fixtures.forEach(f => {
+    const lg = f.league;
+    if (lg && !leagues[lg.id]) leagues[lg.id] = lg.name;
+  });
+  const sel = document.getElementById('league-filter');
+  sel.innerHTML = '<option value="all">جميع المسابقات</option>';
+  Object.entries(leagues).forEach(([id, name]) => {
+    sel.innerHTML += `<option value="${id}">${name}</option>`;
+  });
+}
+
+function filterLeague() {
+  activeLeagueFilter = document.getElementById('league-filter').value;
+  const filtered = activeLeagueFilter === 'all' ? allFixtures : allFixtures.filter(f => String(f.league?.id) === activeLeagueFilter);
+  renderFixtures(filtered);
+}
+
+function renderFixtures(fixtures) {
+  const col = document.getElementById('matches-col');
+  if (!fixtures.length) {
+    col.innerHTML = '<div class="error-box">لا توجد مباريات في هذا اليوم.</div>';
+    return;
+  }
+
+  // Group by league
+  const grouped = {};
+  fixtures.forEach(f => {
+    const key = f.league?.id || 'unknown';
+    if (!grouped[key]) grouped[key] = { league: f.league, matches: [] };
+    grouped[key].matches.push(f);
+  });
+
+  col.innerHTML = Object.values(grouped).map(g => {
+    const lg = g.league || {};
+    return `<div class="league-group">
+      <div class="league-header">
+        ${lg.logo ? `<img src="${lg.logo}" style="width:20px;height:20px;object-fit:contain;">` : '🏆'}
+        <span class="league-name-txt">${lg.name || 'دوري'}</span>
+        <span class="league-round">${lg.country || ''}</span>
+      </div>
+      ${g.matches.map(m => renderMatchRow(m)).join('')}
+    </div>`;
+  }).join('');
+}
+
+function renderMatchRow(m) {
+  const fixture = m.fixture || {};
+  const teams = m.teams || {};
+  const goals = m.goals || {};
+  const status = fixture.status || {};
+  const elapsed = status.elapsed;
+  const short = status.short;
+
+  const isLive = ['1H','2H','ET','P','HT','BT'].includes(short);
+  const isEnded = ['FT','AET','PEN'].includes(short);
+  const isUpcoming = ['NS','TBD','PST'].includes(short);
+
+  let minDisplay = '';
+  if (isLive) minDisplay = `<div class="min-live">${elapsed || '?'}'</div>`;
+  else if (isEnded) minDisplay = `<div class="min-ended">انتهت</div>`;
+  else {
+    const t = fixture.date ? new Date(fixture.date).toLocaleTimeString('ar-MA', {hour:'2-digit',minute:'2-digit'}) : '--:--';
+    minDisplay = `<div class="min-upcoming">${t}</div>`;
+  }
+
+  const homeGoals = goals.home !== null && goals.home !== undefined ? goals.home : '';
+  const awayGoals = goals.away !== null && goals.away !== undefined ? goals.away : '';
+  const homeW = isEnded && homeGoals > awayGoals;
+  const awayW = isEnded && awayGoals > homeGoals;
+
+  const scoreHtml = (!isUpcoming && homeGoals !== '')
+    ? `<div class="score-col"><span class="score-n">${homeGoals}</span><span style="color:#aaa;padding:0 3px;font-size:12px;">-</span><span class="score-n">${awayGoals}</span></div>`
+    : `<div class="score-col"><span style="font-size:13px;color:#aaa;font-weight:700;">VS</span></div>`;
+
+  return `<div class="match-row">
+    <div class="match-minute">${minDisplay}</div>
+    <div class="teams-col">
+      <div class="team-row" style="font-weight:${homeW?700:400}">
+        ${teams.home?.logo ? `<img src="${teams.home.logo}" class="team-logo">` : ''}
+        ${teams.home?.name || ''}
+      </div>
+      <div class="team-row" style="font-weight:${awayW?700:400}">
+        ${teams.away?.logo ? `<img src="${teams.away.logo}" class="team-logo">` : ''}
+        ${teams.away?.name || ''}
+      </div>
+    </div>
+    ${scoreHtml}
+    <span class="match-detail-link">${isEnded?'ملخص ›':'تقديم ›'}</span>
+  </div>`;
+}
+
+function updateLiveInfo(fixtures) {
+  const liveMatches = fixtures.filter(f => ['1H','2H','ET','P','HT','BT'].includes(f.fixture?.status?.short));
+  document.getElementById('live-count').textContent = liveMatches.length + ' مباريات جارية';
+
+  // Live leagues in sidebar
+  const liveLeagues = {};
+  liveMatches.forEach(f => {
+    if (f.league) liveLeagues[f.league.id] = f.league;
+  });
+  const ll = document.getElementById('live-leagues-list');
+  if (Object.keys(liveLeagues).length === 0) {
+    ll.innerHTML = '<div style="padding:10px 14px;font-size:12px;color:#aaa;">لا توجد مباريات جارية حالياً</div>';
+  } else {
+    ll.innerHTML = Object.values(liveLeagues).map(lg =>
+      `<div class="comp-item">${lg.logo?`<img src="${lg.logo}" style="width:18px;height:18px;object-fit:contain;">`:''} ${lg.name} <span class="live-badge">● مباشر</span></div>`
+    ).join('');
+  }
+
+  // Goals sidebar
+  const goals = [];
+  liveMatches.forEach(f => {
+    const events = f.events || [];
+    events.filter(e => e.type === 'Goal').forEach(e => {
+      goals.push({ min: e.time?.elapsed + "'", name: e.player?.name || 'هدف', team: e.team?.name || '' });
+    });
+  });
+  const gs = document.getElementById('goals-sidebar');
+  if (!goals.length) {
+    gs.innerHTML = '<div style="padding:10px 14px;font-size:12px;color:#aaa;">لا توجد أهداف بعد</div>';
+  } else {
+    gs.innerHTML = goals.slice(0,6).map(g =>
+      `<div class="scorer-row"><span class="scorer-min">${g.min}</span><span style="flex:1">${g.name}</span><span style="color:#aaa;font-size:11px;">${g.team}</span></div>`
+    ).join('');
+  }
+}
+
+// ===== STANDINGS =====
+async function loadStandings() {
+  const leagueId = document.getElementById('st-league-sel').value;
+  const container = document.getElementById('standings-container');
+  container.innerHTML = '<div class="loading-spinner"><i class="fa fa-spinner"></i>جاري التحميل...</div>';
+
+  const data = await apiGet('/football-get-league-standings?leagueid=' + leagueId + '&season=' + SEASON);
+
+  if (!data || !data.response || !data.response[0]) {
+    container.innerHTML = '<div class="error-box">تعذر تحميل الترتيب.</div>';
+    return;
+  }
+
+  const standings = data.response[0].league?.standings?.[0] || [];
+  if (!standings.length) {
+    container.innerHTML = '<div class="error-box">لا توجد بيانات ترتيب متاحة.</div>';
+    return;
+  }
+
+  function dot(r) {
+    const c = r==='W'?'w':r==='D'?'d':'l';
+    const l = r==='W'?'ف':r==='D'?'ت':'خ';
+    return `<div class="dot ${c}">${l}</div>`;
+  }
+
+  container.innerHTML = `<div class="standings-wrap">
+    <table class="standings-table">
+      <thead><tr>
+        <th>#</th><th style="text-align:right;padding-right:10px;">الفريق</th>
+        <th>ل</th><th>ف</th><th>ت</th><th>خ</th>
+        <th>لص+</th><th>لص-</th><th>فا</th>
+        <th style="color:#f7c948;">نق</th><th>الشكل</th>
+      </tr></thead>
+      <tbody>
+        ${standings.map((t, i) => {
+          const rank = t.rank;
+          const team = t.team || {};
+          const all = t.all || {};
+          const goals = all.goals || {};
+          const gd = (goals.for||0) - (goals.against||0);
+          const gdS = gd > 0 ? '+'+gd : gd;
+          const form = (t.form || '').split('').slice(-5);
+          let rs = '';
+          if (rank <= 3) rs = 'border-right:4px solid #185FA5;';
+          else if (rank === 4) rs = 'border-right:4px solid #3B6D11;';
+          else if (rank >= standings.length - 2) rs = 'border-right:4px solid #A32D2D;';
+          return `<tr style="${rs}">
+            <td><b style="color:${rank<=3?'#f7c948':'inherit'}">${rank}</b></td>
+            <td><div class="team-name-cell">
+              ${team.logo?`<img src="${team.logo}" style="width:20px;height:20px;object-fit:contain;">`:''}
+              ${team.name||''}
+            </div></td>
+            <td>${all.played||0}</td>
+            <td>${all.win||0}</td>
+            <td>${all.draw||0}</td>
+            <td>${all.lose||0}</td>
+            <td>${goals.for||0}</td>
+            <td>${goals.against||0}</td>
+            <td style="color:${gd>=0?'#27500A':'#791F1F'};font-weight:600;">${gdS}</td>
+            <td style="font-weight:700;color:${rank<=3?'#f7c948':'inherit'}">${t.points||0}</td>
+            <td><div class="form-dots">${form.map(r=>dot(r)).join('')}</div></td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+    <div class="legend">
+      <span><span class="ldot" style="background:#185FA5;"></span>دوري أبطال أوروبا</span>
+      <span><span class="ldot" style="background:#3B6D11;"></span>مسابقة أوروبية</span>
+      <span><span class="ldot" style="background:#A32D2D;"></span>الهبوط</span>
+    </div>
+  </div>`;
+}
+
+function setSt(id) {
+  document.getElementById('st-league-sel').value = id;
+  loadStandings();
+}
+
+// ===== PAGE NAV =====
+function goPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  const n = document.getElementById('nav-' + name);
+  if (n) n.classList.add('active');
+  window.scrollTo(0, 0);
+  if (name === 'standings') loadStandings();
+  if (name === 'live') renderChat();
+}
+
+// ===== LIVE CHAT =====
+const chatMessages = [
+  {user:"محمد",msg:"المغرب غادي يفوز 🔥"},
+  {user:"كريم",msg:"زياش خطير 💪"},
+  {user:"سارة",msg:"يالله يا أسود الأطلس 🦁🇲🇦"},
+];
+const autoNames = ["ياسين","فاطمة","عمر","ليلى","خالد","نور","رضا","مريم"];
+const autoMsgs = ["واو هدف رائع! 🔥","يالله يا المغرب 🇲🇦","ما شاء الله على اللعبة","رونالدو مازال يعطيها 💪","هاد الماتش بحال القلب ❤️","زياش الأفضل 🌟"];
+
+function renderChat() {
+  const el = document.getElementById('chat-msgs');
+  if (!el) return;
+  el.innerHTML = chatMessages.slice(-30).map(c => `<div class="chat-msg"><span class="user">${c.user}:</span> ${c.msg}</div>`).join('');
+  el.scrollTop = el.scrollHeight;
+}
+
+function sendChat() {
+  const inp = document.getElementById('chat-in');
+  if (!inp || !inp.value.trim()) return;
+  chatMessages.push({user:"أنت", msg: inp.value.trim()});
+  inp.value = '';
+  renderChat();
+}
+
+let playing = false;
+function togglePlay() {
+  playing = !playing;
+  const btn = document.getElementById('play-btn');
+  if (btn) { btn.innerHTML = playing ? '⏸' : '▶'; btn.style.background = playing ? '#e24b4a' : '#f7c948'; }
+}
+
+// ===== AUTO REFRESH =====
+let countdown = 60;
+function tick() {
+  countdown--;
+  const cd = document.getElementById('cd');
+  const cd2 = document.getElementById('cd2');
+  const pb = document.getElementById('pb');
+  if (cd) cd.textContent = countdown;
+  if (cd2) cd2.textContent = countdown;
+  if (pb) pb.style.width = (countdown / 60 * 100) + '%';
+  if (countdown <= 0) {
+    countdown = 60;
+    if (document.getElementById('page-home').classList.contains('active')) loadFixtures();
+  }
+}
+
+function autoChat() {
+  if (document.getElementById('page-live').classList.contains('active')) {
+    const n = autoNames[Math.floor(Math.random() * autoNames.length)];
+    const msg = autoMsgs[Math.floor(Math.random() * autoMsgs.length)];
+    chatMessages.push({user: n, msg});
+    if (chatMessages.length > 40) chatMessages.shift();
+    renderChat();
+  }
+}
+
+// ===== INIT =====
+// Fix date tabs
+['tab-minus2','tab-minus1','tab-plus1','tab-plus2'].forEach((id, i) => {
+  const offsets = [-2,-1,1,2];
+  const el = document.getElementById(id);
+  if (el) el.textContent = arabicShortDate(getDateWithOffset(offsets[i]));
+});
+
+loadFixtures();
+setInterval(tick, 1000);
+setInterval(autoChat, 4000);
+</script>
+</body>
+</html>
